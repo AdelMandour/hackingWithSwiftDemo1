@@ -9,11 +9,34 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-
+    var selectedImage: String?
+    @IBOutlet weak var imageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        navigationItem.largeTitleDisplayMode = .never
+        title = selectedImage
+        if let imageToLoad = selectedImage {
+            imageView.image  = UIImage(named: imageToLoad)
+        }
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
         // Do any additional setup after loading the view.
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.hidesBarsOnTap = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.hidesBarsOnTap = false
+    }
+    override func prefersHomeIndicatorAutoHidden() -> Bool {
+        return navigationController?.hidesBarsOnTap ?? false
+    }
+    @objc func shareTapped() {
+        let vc = UIActivityViewController(activityItems: [imageView.image!], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
     }
 
     override func didReceiveMemoryWarning() {
